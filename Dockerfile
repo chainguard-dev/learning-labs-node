@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/node:latest
+FROM cgr.dev/chainguard/node:latest AS builder
 
 ENV NODE_ENV production
 
@@ -11,8 +11,15 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 
 USER node
 
-COPY . .
+COPY server.js .
+COPY public ./public
 
+FROM cgr.dev/chainguard/node:latest
+
+COPY --from=builder --chown=node:node /usr/src/app /app
 EXPOSE 3000
+ENV NODE_ENV=production
+ENV PATH=/app/node_modules/.bin:$PATH
+WORKDIR /app
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["node", "server.js"]
