@@ -1,4 +1,4 @@
-FROM node:latest
+FROM cgr.dev/chainguard/node:latest
 
 ENV NODE_ENV production
 
@@ -14,4 +14,5 @@ USER node
 COPY . .
 
 EXPOSE 3000
-CMD node server.js
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["node", "server.js"]
